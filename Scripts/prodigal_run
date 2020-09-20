@@ -1,5 +1,0 @@
-#! /bin/bash
-
-
-for filename in hcov*.fasta; do prodigal  -i "$filename" -o "$filename".gff  -f gff -a "$filename".proteins.faa -d "$filename".nucleotideo -p meta; done
-
