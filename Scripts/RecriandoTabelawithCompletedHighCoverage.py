@@ -36,11 +36,12 @@ for line in handle:
 CompCoverageTable.write(title)
 count = 0
 
-
+#Ainda tem o nested for . . .
 for epi in ids:
     print(epi)
     for line in handle:
         epis = line.split()
+#O indice de epis que tem o identificador EPI_ é o 2 não o 1!
         if epi == epis[1]:
             print(epi, 'MATCH')
             count = count + 1
