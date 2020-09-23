@@ -18,7 +18,8 @@ filedata = filedata.replace('/', 'BARRA')
 filedata = filedata.replace('|', 'PIPE')
 
 # Escrevendo o arquivo
-with open(file_name, 'w') as file:
+newSeqFile = file_name.split('.')[0] + 'fixnames.fasta' #Conferir que esteja bem
+with open(newSeqFile, 'w') as file:
     file.write(filedata)
     file.close()
 
