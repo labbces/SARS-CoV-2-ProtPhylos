@@ -1,5 +1,11 @@
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument("sequenceFile", help="File with sequences in fasta format from GISAID")
+args = parser.parse_args()
+
 # Lendo o arquivo
-file_name = input('Name of the file:')
+file_name = args.sequenceFile
 try:
     with open(file_name, 'r') as file:
         filedata = file.read()
