@@ -1,49 +1,50 @@
-import re
-name = input('Enter file name:')
+import argparse
 
+parser = argparse.ArgumentParser()
+parser.add_argument("sequenceFile", help="File with sequences in fasta format")
+parser.add_argument("metadataFile", help="File with metadata. Could have identifiers not present in sequenceFileincrease")
+args = parser.parse_args()
 
+# Opening files safely
 try:
-    hand = open(name, 'r')
+    seq_handler = open(args.sequenceFile, 'r')
 except:
-    print('File cannot be open')
+    print('Sequence file cannot be open')
     exit()
 
-ids = list()
+try:
+    meta_handler = open(args.metadataFile, 'r')
+except:
+    print('Metadate file cannot be open')
+    exit()
 
-for line in hand:
+# Making list to store adds
+ids = list()
+for line in seq_handler:
     line = line.strip()
     if not line.startswith('>hCoV'):
         continue
-    x = re.findall('EPI.+?P', line)
-    y = x[0]
-    identificador = y[:-1]
-    ids.append(identificador)
+    seq_id = line.split('|')[1]
+    if seq_id.startswith('EPI_ISL_'):
+        ids.append(seq_id)
 
+# Creating new table to store high coverage and complete sequences
+CompCoverageTable = open('HighCoverageCompleteTable.tsv', 'w')
 
-tabela = input('Nome do arquivo possuindo a Tabela de metadados do Gisaid:')
-
-try:
-    handle = open(tabela, 'r')
-except:
-    print('File cannot be open')
-    exit()
-
-CompCoverageTable = open('nova_tabela2.tsv', 'w')
-for line in handle:
+# Making a title
+for line in meta_handler:
     title = line
     break
 CompCoverageTable.write(title)
 
-
+# Creating a Hash to store identifiers
 next_table = {}
+for line in meta_handler:
+    string = line
+    line = line.split()
+    next_table[line[2]] = string
 
-for line in handle:
-        string = line
-        line = line.split()
-        next_table[line[2]] = string # código para tabela nextmeta
-#       next_table[line[1]] = string # código para a tabela do browser
-
-
+# Saving highcoverage and complete sequences in the table
 matches = 0
 chaves_out = list()
 for epi in ids:
@@ -53,7 +54,6 @@ for epi in ids:
         CompCoverageTable.write(string)
     else:
         chaves_out.append(epi)
-print(f'Número de matches: {matches}, IDs Totais: {len(ids)}')
-print(f'Chaves que não batem:(opcional) ; número de chaves fora chaves_out: {len(chaves_out)}')
 
-
+# Printing run parameters
+print(f'Número de matches: {matches}, IDs Totais: {len(ids)}, número de chaves fora chaves_out: {len(chaves_out)}')
