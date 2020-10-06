@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 from Bio import SeqIO
 import os
 import argparse
@@ -19,15 +17,15 @@ args = parser.parse_args()
 
 # Opening files safely
 try:
-    seq_handler = open(args.sequenceFile, 'r')
+    seq_handler = open(args.sequencesFile, 'r')
 except:
-    print('File', args.sequenceFile,  'cannot be open')
+    print('File', args.sequencesFile,  'cannot be open')
     exit()
 
 try:
-    metadata_handler = open(args.metadataFile, 'r')
+    metadata_handler = open(args.FineMetadataFile, 'r')
 except:
-    print('File', args.metadataFile, 'cannot be open')
+    print('File', args.FineMetadataFile, 'cannot be open')
     exit()
 
 
@@ -37,11 +35,9 @@ for region in regions:
     if not os.path.exists(region):
         os.mkdir(region)
 
-# opening table was previously created only using highcoverage and complete seqs
-table = open(metadata_handler, 'r')
 # Creating a Hash to store identifiers
 next_table = {}
-for line in table:
+for line in metadata_handler:
     line = line.split()
     next_table[line[2]] = line[5]
 
