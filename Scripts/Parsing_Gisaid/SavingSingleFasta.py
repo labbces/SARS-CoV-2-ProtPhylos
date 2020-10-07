@@ -1,3 +1,4 @@
+#!/Storage/progs/Python-3.7.2/bin/python3
 from Bio import SeqIO
 import os
 import argparse
@@ -30,15 +31,16 @@ except:
 
 
 # Creating directories to save each sequence for region
-regions = ["Oceania", "Europe", "North", "South", "Asia", "Africa"]
-for region in regions:
-    if not os.path.exists(region):
-        os.mkdir(region)
+#regions = ["Oceania", "Europe", "North", "South", "Asia", "Africa"]
+#for region in regions:
+#    if not os.path.exists(region):
+#        os.mkdir(region)
 
 # Creating a Hash to store identifiers
 next_table = {}
 for line in metadata_handler:
-    line = line.split()
+    line = line.split("\t")
+    print(line[2])
     next_table[line[2]] = line[5]
 
 # list to store broken sequences from Gisaid
@@ -47,9 +49,17 @@ broken = list()
 # effort to save each sequence in the corresponding regions
 for seq_record in SeqIO.parse(seq_handler, "fasta"):  # this fasta file was created in using copy_replace file
     try:
-        y = seq_record.id.split("PIPE")[1]
+        y = seq_record.id.split("|")[1]
+        region = next_table[y]
+        region = region.replace(' ','_')
         if y in next_table:
-             SeqIO.write(seq_record, f'{next_table[y]}/{seq_record.id}.fasta', 'fasta')
+             if not os.path.isdir(region):
+               os.mkdir(region)
+             filename = seq_record.id
+             filename = filename.replace("|","____")
+             filename = filename.replace("/","____")
+             pathname = f'{region}/{filename}.fasta'
+             SeqIO.write(seq_record, pathname, 'fasta')
     except:
         print(seq_record.id)
         broken.append(seq_record.id)
