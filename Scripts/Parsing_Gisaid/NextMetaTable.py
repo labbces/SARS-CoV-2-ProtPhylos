@@ -48,7 +48,7 @@ for line in seq_handler:
 # Creating new table to store high coverage and complete sequences
 CompCoverageTable = rebuild_metadata_handler
 
-# Making a title
+# Making a title de um jeito bem safado
 for line in metadata_handler:
     title = line
     break
@@ -63,14 +63,16 @@ for line in metadata_handler:
 
 # Saving highcoverage and complete sequences in the table
 matches = 0
-chaves_out = list()
+keys_out = list()
+sq_handler = open("missing_sequences.txt", "w")
+
 for epi in ids:
     if epi in next_table:
         string = next_table[epi]
         matches += 1
         CompCoverageTable.write(string)
     else:
-        chaves_out.append(epi)
-
+        keys_out.append(epi)
+        sq_handler.write(epi+"\n")
 # Printing run parameters
-print(f'Número de matches: {matches}, IDs Totais: {len(ids)}, número de chaves fora chaves_out: {len(chaves_out)}')
+print(f'Número de matches: {matches}, IDs Totais: {len(ids)}, número de chaves fora chaves_out: {len(keys_out)}')

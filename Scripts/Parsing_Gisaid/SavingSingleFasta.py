@@ -46,6 +46,11 @@ for line in metadata_handler:
 # list to store broken sequences from Gisaid
 broken = list()
 
+# Writing new file with the changes
+for line in seq_handler:
+    if line.startswith('>'):
+        line = line.replace('', '_')  # Replacing "_" and "_" to avoid problems with biopython
+
 # effort to save each sequence in the corresponding regions
 for seq_record in SeqIO.parse(seq_handler, "fasta"):  # this fasta file was created in using copy_replace file
     try:
