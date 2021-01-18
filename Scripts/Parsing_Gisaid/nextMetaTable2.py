@@ -3,10 +3,8 @@
 import argparse
 
 '''                                              Description
-    This script uses high coverage sequences (SeqH) and completed sequences from(SeqC) downloaded from Gisaid plus the 
-    nextmeta.tsv also downloaded from Gisaid to reconstructed nextmeta file, but only using SeqH ^ SeqC  sequences.
-    (^) = logic conjunction
-
+    This script uses the sequences that were filtered and the metadata.tsv from Gisaid to make a metadata file with only 
+    the sequences complete(>29000 bp) and with high coverage.
 '''
 
 # using argparse to improve execution of program using terminal
@@ -39,11 +37,10 @@ except:
 ids = list()
 for line in seq_handler:
     line = line.strip()
-    if not line.startswith('>hCoV'):
+    if not line.startswith('>'):
         continue
-    seq_id = line.split('|')[1]
-    if seq_id.startswith('EPI_ISL_'):
-        ids.append(seq_id)
+    seq_id = line.split('>')[1]
+    ids.append(seq_id)
 
 # Making a title
 for line in metadata_handler:
@@ -56,7 +53,7 @@ next_table = {}
 for line in metadata_handler:
     string = line
     line = line.split()
-    next_table[line[2]] = string
+    next_table[line[0]] = string
 
 # Saving highcoverage and complete sequences in the table
 matches = 0
@@ -74,4 +71,5 @@ for epi in ids:
 
 # Printing run parameters
 print(f'Número de matches: {matches}, IDs Totais: {len(ids)}, número de chaves fora chaves_out: {len(keys_out)}')
+
 
