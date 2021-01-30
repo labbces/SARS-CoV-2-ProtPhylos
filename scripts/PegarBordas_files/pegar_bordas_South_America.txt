@@ -1,0 +1,30 @@
+#!/bin/bash
+
+#$ -q all.q
+#$ -V
+#$ -cwd
+#$ -t 1-952
+#$ -tc 48
+
+module load EMBOSS/6.6.0
+
+EMB=`ls -1 /Storage/data1/bia.estevam/PegarBordas_files/RATT_files/South_America/*.embl | head -n $SGE_TASK_ID | tail -n 1`
+EMBbase=`basename $EMB`
+echo $EMBbase
+
+COR_FINAL=`grep mat_peptide $EMB | grep -v join|sed 's/FT   mat_peptide     [0-9]*..//'|sort -n|tail -n 1`
+
+count=0
+for cor in $(grep mat_peptide $EMB | tr -d "join(" | tr -d ")"| sed 's/FT   mat_peptde     //'|sed 's/..[0-9]*,[0-9]*../../'|sed 's/[0-9]*\.\.//' | sort -n); 
+ do
+  count=$((count+1))
+  if [ $cor -lt ${COR_FINAL} ] 
+  then  
+    start=$((cor-11))
+    end=$((cor+1+11))
+    output=${EMBbase}.bordas.${count}_${start}_${end}
+    extractseq $EMB ${output}.nt.fa -regions "${start}-${end}"
+    transeq ${output}.nt.fa ${output}.aa.fa -frame=1
+  fi
+done
+
