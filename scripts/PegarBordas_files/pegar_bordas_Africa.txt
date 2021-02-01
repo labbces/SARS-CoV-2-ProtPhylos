@@ -4,6 +4,7 @@
 #$ -V
 #$ -cwd
 #$ -t 1-593
+#$ -tc 48 
 
 module load EMBOSS/6.6.0
 
