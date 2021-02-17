@@ -4,7 +4,11 @@
 #$ -V
 #$ -cwd
 #$ -t 1-593
+<<<<<<< HEAD
 #$ -tc 48 
+=======
+#$ -tc 48
+>>>>>>> 77b27a5ccc88fb5120d6a7650a98b6ed423e2a40
 
 module load EMBOSS/6.6.0
 
