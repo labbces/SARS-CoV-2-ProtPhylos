@@ -10,7 +10,6 @@ import matplotlib.pyplot as plt
 import logomaker
 from logomaker import Glyph
 
-
 # Using ArgParse to make easier use this script using command-line
 parser = argparse.ArgumentParser()
 parser.add_argument("BordasPath", help="path to borders files")
@@ -48,11 +47,10 @@ for file in bordasFiles:
                             else:
                                 seqDict[line] = 1
                         elif args.DataSetType.upper().strip() == 'NONREDUNDANT':
-                            seqDict[line.upper()] = 1
+                            seqDict[line] = 1
                     else:
                         print('The sequence size is not as expected', file.name)
 print(f'Dicionário das sequências:\n{seqDict}\n')
-
 
 # Save sequences in a file and add the residues in each position at the seqDict dictionary
 posDict = {}
@@ -101,7 +99,6 @@ with open(args.SeqStorage, 'w') as SeqStorage:
                             posDict[e][seq[e]] = posDict[e][seq[e]] + 1
 print(f'Dicionário das Posições:\n{posDict}\n')
 
-
 # Build the matrixDict
 matrixDict = {'nt': {'AAA': [], 'AAC': [], 'AAG': [], 'AAT': [], 'ACA': [], 'ACC': [], 'ACG': [], 'ACT': [], 'AGA': [],
                      'AGC': [], 'AGG': [], 'AGT': [], 'ATA': [], 'ATC': [], 'ATG': [], 'ATT': [], 'CAA': [], 'CAC': [],
@@ -115,16 +112,23 @@ matrixDict = {'nt': {'AAA': [], 'AAC': [], 'AAG': [], 'AAT': [], 'ACA': [], 'ACC
               'aa': {'A': [], 'C': [], 'D': [], 'E': [], 'F': [], 'G': [], 'H': [], 'I': [], 'K': [], 'L': [],
                      'M': [], 'N': [], 'P': [], 'Q': [], 'R': [], 'S': [], 'T': [], 'V': [], 'W': [], 'Y': []
                      }
-          }
-Codon2Symbol = {'AAA': 'A', 'AAC': 'B', 'AAG': 'C', 'AAT': 'D', 'ACA': 'E', 'ACC': 'F', 'ACG': 'G', 'ACT': 'H', 'AGA': 'I',
-                    'AGC': 'J', 'AGG': 'K', 'AGT': 'L', 'ATA': 'M', 'ATC': 'N', 'ATG': 'O', 'ATT': 'P', 'CAA': 'Q', 'CAC': 'R',
-                    'CAG': 'S', 'CAT': 'T', 'CCA': 'U', 'CCC': 'V', 'CCG': 'W', 'CCT': 'X', 'CGA': 'Y', 'CGC': 'Z', 'CGG': '1',
-                    'CGT': '2', 'CTA': '3', 'CTC': '4', 'CTG': '5', 'CTT': '6', 'GAA': '7', 'GAC': '8', 'GAG': '9', 'GAT': ';',
-                    'GCA': ':', 'GCC': '}', 'GCG': '{', 'GCT': '[', 'GGA': ']', 'GGC': '(', 'GGG': ')', 'GGT': '*', 'GTA': '&',
-                    'GTC': '$', 'GTG': '%', 'GTT': '@', 'TAA': '#', 'TAC': '-', 'TAG': '=', 'TAT': '+', 'TCA': '/', 'TCC': '|',
-                    'TCG': '<', 'TCT': '>', 'TGA': '?', 'TGC': '!', 'TGG': ',', 'TGT': '.', 'TTA': 'ç', 'TTC': '"', 'TTG': "'",
-                    'TTT': '_'
-                    }
+              }
+Codon2Symbol = {'AAA': 'A', 'AAC': 'B', 'AAG': 'C', 'AAT': 'D', 'ACA': 'E', 'ACC': 'F', 'ACG': 'G', 'ACT': 'H',
+                'AGA': 'I',
+                'AGC': 'J', 'AGG': 'K', 'AGT': 'L', 'ATA': 'M', 'ATC': 'N', 'ATG': 'O', 'ATT': 'P', 'CAA': 'Q',
+                'CAC': 'R',
+                'CAG': 'S', 'CAT': 'T', 'CCA': 'U', 'CCC': 'V', 'CCG': 'W', 'CCT': 'X', 'CGA': 'Y', 'CGC': 'Z',
+                'CGG': '1',
+                'CGT': '2', 'CTA': '3', 'CTC': '4', 'CTG': '5', 'CTT': '6', 'GAA': '7', 'GAC': '8', 'GAG': '9',
+                'GAT': ';',
+                'GCA': ':', 'GCC': '}', 'GCG': '{', 'GCT': '[', 'GGA': ']', 'GGC': '(', 'GGG': ')', 'GGT': '*',
+                'GTA': '&',
+                'GTC': '$', 'GTG': '%', 'GTT': '@', 'TAA': '#', 'TAC': '-', 'TAG': '=', 'TAT': '+', 'TCA': '/',
+                'TCC': '|',
+                'TCG': '<', 'TCT': '>', 'TGA': '?', 'TGC': '!', 'TGG': ',', 'TGT': '.', 'TTA': 'ç', 'TTC': '"',
+                'TTG': "'",
+                'TTT': '_'
+                }
 
 for pos in posDict.keys():
     total = sum(posDict[pos].values())
@@ -142,25 +146,17 @@ if args.SeqType.upper().strip() == 'NT':
         matrixSimb[Codon2Symbol[codon]] = matrixDict[args.SeqType][codon]
     print(f'Dicionário que formará a Matrix com símbolos: \n{matrixSimb}\n')
 
-
 # Build Matrix and save
 MatraixDF = pd.DataFrame(matrixDict[args.SeqType])
 MatraixProb_name = 'PROB_' + args.Matrix
 MatraixDF.to_csv(sep="\t", header=True, path_or_buf=MatraixProb_name, index=True)
 print(f'Matrix: \n{MatraixDF}\n')
 
-
 if args.SeqType.upper().strip() == 'NT':
     matrixSymbol_name = 'PROB_' + args.Matrix + '_Symbol'
     MatraixDF = pd.DataFrame(matrixSimb)
     MatraixDF.to_csv(sep="\t", header=True, path_or_buf=matrixSymbol_name, index=True)
     print(f'Matrix de Símbolos: \n{MatraixDF}\n')
-
-
-
-## 1 DIA -> MATRIXES PROBABILIDADE PRONTAS
-
-
 
 # Converting probability matrix to information (bits) matrix
 matrixValid = logomaker.validate_matrix(MatraixDF, matrix_type='probability', allow_nan=True)
@@ -170,17 +166,19 @@ matrixBit.to_csv(sep="\t", header=True, path_or_buf=matrixBit_name, index=True)
 print(f'Matrix de Bits:\n{matrixBit}\n')
 
 if args.SeqType.upper().strip() == 'AA':
-    fig, ax = plt.subplots(figsize=[7, 3])
+    fig, ax = plt.subplots(figsize=[7, 4])
     # set bounding box
-    ax.set_xlim([0.5, (lentype[args.SeqType]+1)])
+    ax.set_xlim([0.5, (lentype[args.SeqType] + 1)])
     ax.set_ylim([0, 10])
-    sequenceLogo = logomaker.Logo(matrixBit)
+    sequenceLogo = logomaker.Logo(matrixBit, ax=ax)
     # style using Logo methods
     sequenceLogo.style_xticks(anchor=0, spacing=5)
     sequenceLogo.ax.set_ylabel('information (bits)')
     sequenceLogo.ax.set_xlabel('length')
-    fig.savefig('fig2.png', transparent=False)
-    # FALTA SALVAR A FIGURA, MAS COMO???? ------------------------------------------------------------------
+    title = f' {args.SeqType} dataset {args.DataSetType} border {args.NumBorder}'
+    ax.set_title(title)
+    figsave_name = args.SeqLogo + '.png'
+    fig.savefig(figsave_name, transparent=False)
 
 elif args.SeqType.upper().strip() == 'NT':
     dictBit = matrixBit.to_dict('Dict')
@@ -190,21 +188,47 @@ elif args.SeqType.upper().strip() == 'NT':
             dictBitCodon[k] = dictBit[v]
     print(f'Dict dos bits dos codons:\n{dictBitCodon}\n')
 
+    color_palett = {'GCT': 'black', 'GCC': 'black', 'GCA': 'black', 'GCG': 'black', 'TTT': 'black', 'TTC': 'black',
+                    'ATT': 'black', 'ATC': 'black', 'ATA': 'black', 'TTA': 'black', 'TTG': 'black', 'CTT': 'black',
+                    'CTC': 'black', 'CTA': 'black', 'CTG': 'black', 'ATG': 'black', 'CCT': 'black', 'CCC': 'black',
+                    'CCA': 'black', 'CCG': 'black', 'TGG': 'black', 'GTT': 'black', 'GTC': 'black', 'GTA': 'black',
+                    'GTG': 'black',
+                    'TGT': 'lime', 'TGC': 'lime', 'GGT': 'lime', 'GGC': 'lime', 'GGA': 'lime', 'GGG': 'lime',
+                    'TCT': 'lime', 'TCC': 'lime', 'TCA': 'lime', 'TCG': 'lime', 'AGT': 'lime', 'AGC': 'lime',
+                    'ACT': 'lime', 'ACC': 'lime', 'ACA': 'lime', 'ACG': 'lime', 'TAT': 'lime', 'TAC': 'lime',
+                    'GAT': 'red', 'GAC': 'red', 'GAA': 'red', 'GAG': 'red',
+                    'CAT': 'blue', 'CAC': 'blue', 'AAA': 'blue', 'AAG': 'blue', 'CGT': 'blue', 'CGC': 'blue',
+                    'CGA': 'blue', 'CGG': 'blue', 'AGA': 'blue', 'AGG': 'blue',
+                    'AAT': 'magenta', 'AAC': 'magenta', 'CAA': 'magenta', 'CAG': 'magenta',
+                    'TAA': 'peru', 'TAG': 'gold', 'TGA': 'lightcyan'}
+
     info2Glyph = {}
-    floor = ceiling = 0
-    central = 2 # esse aqui eu coloquei por teste, não sei como deixar automático
-    for pos in dictBitCodon[codon].keys():
-        for codon in dictBitCodon.keys():
-            floor = ceiling
-            ceiling = (floor + dictBitCodon[codon][pos])
-            if dictBitCodon[codon][pos] != 0:
-                if pos not in info2Glyph.keys():
-                    info2Glyph[pos] = {codon: {'bit': dictBitCodon[codon][pos], 'floor': floor, 'ceiling': ceiling, 'p': central}}
-                else:
-                    info2Glyph[pos][codon] = {'bit': dictBitCodon[codon][pos], 'floor': floor, 'ceiling': ceiling, 'p': central}
-        central += 3
+    p = 2
+    for pos in range(0, int((lentype[args.SeqType])/3)):
+        print(f'pos: \n{pos}\n')
+        codonbits = {}
         floor = ceiling = 0
-    print(f'Informações que serão usadas no glyph:\n{info2Glyph}\n')
+        for codon in dictBitCodon.keys():
+            codonbits[codon] = dictBitCodon[codon][pos]
+        codonBits_Order = sorted(codonbits.items(), key=lambda x: x[1], reverse=False)
+        for TupleCodonBit in codonBits_Order:
+            trinca = TupleCodonBit[0]
+            bit = TupleCodonBit[1]
+            if bit != 0.0:
+                print(f'TupleCodonBit: {TupleCodonBit}')
+                floor = ceiling
+                ceiling = (floor + TupleCodonBit[1])
+                print(f'Floor: {floor}')
+                print(f'Ceiling: {ceiling}')
+                if pos not in info2Glyph.keys():
+                    info2Glyph[pos] = {trinca: {'bit': bit, 'floor': floor, 'ceiling': ceiling, 'p': p, 'color': color_palett[trinca]}}
+                else:
+                    info2Glyph[pos][trinca] = {'bit': bit, 'floor': floor, 'ceiling': ceiling, 'p': p, 'color': color_palett[trinca]}
+        p += 3
+    print(f'\ninfo2Glyph: \n{info2Glyph}\n')
+
+
+
 
     # removing positions and build list to fill glyphs
     PreListInfo2Glyph = list(info2Glyph.values())
@@ -217,18 +241,21 @@ elif args.SeqType.upper().strip() == 'NT':
             })
     print(f'Glyph final list: \n{ListInfo2Glyph}\n')
 
-    fig, ax = plt.subplots(figsize=[7, 3])
+    fig, ax = plt.subplots(figsize=[7, 4])
     # set bounding box
-    ax.set_xlim([0.5, (lentype[args.SeqType]+1)])
-    ax.set_ylim([0, 10])
+    ax.set_xlim([0.5, (lentype[args.SeqType] + 1)])
+    ax.set_ylim([0, 8])
 
-    def generate_glyph(c, p, width, ceiling, ax, floor):
+    def generate_glyph(c, p, width, ceiling, ax, floor, color):
         return Glyph(c=c,
                      p=p,
                      width=width,
                      ceiling=ceiling,
                      ax=ax,
-                     floor=floor)
+                     floor=floor,
+                     color=color)
+
+
     list(
         map(
             lambda item:
@@ -238,11 +265,15 @@ elif args.SeqType.upper().strip() == 'NT':
                 width=3.0,
                 ceiling=item['data']['ceiling'],
                 ax=ax,
-                floor=item['data']['floor'])
+                floor=item['data']['floor'],
+                color=item['data']['color'])
             ,
             ListInfo2Glyph
         )
     )
-
-    fig.savefig('fig3.png', transparent=True)
-
+    title = f' {args.SeqType} dataset {args.DataSetType} border {args.NumBorder}'
+    ax.set_title(title)
+    ax.set_ylabel('information (bits)')
+    ax.set_xlabel('length')
+    figsave_name = args.SeqLogo + '.png'
+    fig.savefig(figsave_name, transparent=False)
