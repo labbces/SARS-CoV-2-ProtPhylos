@@ -165,6 +165,7 @@ matrixBit_name = "BIT_" + args.Matrix
 matrixBit.to_csv(sep="\t", header=True, path_or_buf=matrixBit_name, index=True)
 print(f'Matrix de Bits:\n{matrixBit}\n')
 
+# Building sequence logos
 if args.SeqType.upper().strip() == 'AA':
     fig, ax = plt.subplots(figsize=[7, 4])
     # set bounding box
@@ -181,6 +182,16 @@ if args.SeqType.upper().strip() == 'AA':
     fig.savefig(figsave_name, transparent=False)
 
 elif args.SeqType.upper().strip() == 'NT':
+    Symbols2Codon = {}
+    for symbol in matrixBit.columns:
+        Codon = list(Codon2Symbol.keys())[list(Codon2Symbol.values()).index(symbol)]
+        Symbols2Codon[symbol] = Codon
+    print(f'Symbols 2 codon: \n {Symbols2Codon}')
+    bit_matrix_codon = matrixBit.rename(Symbols2Codon, axis='columns')
+    print(f'Bit matrix codon: \n{bit_matrix_codon}\n')
+    matrixCodonBit_name = "BIT_Codon_" + args.Matrix
+    bit_matrix_codon.to_csv(sep="\t", header=True, path_or_buf=matrixCodonBit_name, index=True)
+
     dictBit = matrixBit.to_dict('Dict')
     dictBitCodon = {}
     for simb in dictBit.keys():
