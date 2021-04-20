@@ -39,7 +39,7 @@ for line in seq_handler:
     line = line.strip()
     if not line.startswith('>'):
         continue
-    seq_id = line.split('>')[1]
+    seq_id = line.split('/')[2]
     ids.append(seq_id)
 
 # Making a title
@@ -49,11 +49,19 @@ for line in metadata_handler:
 rebuild_metadata_handler.write(title)
 
 # Creating a Hash to store identifiers
+hash_problems = list()  # list used to store IDs from sequences with Index list error
 next_table = {}
 for line in metadata_handler:
-    string = line
-    line = line.split()
-    next_table[line[0]] = string
+    try:
+        string = line
+        line = line.split('\t')
+        tag = line[0].split('/')[2]
+        next_table[tag] = string
+    except:
+        hash_problems.append(line)
+
+print(f'The number of sequences with index list error is equal to: {len(hash_problems)}')
+
 
 # Saving highcoverage and complete sequences in the table
 matches = 0
@@ -70,6 +78,6 @@ for epi in ids:
         sq_handler.write(epi+"\n")
 
 # Printing run parameters
-print(f'Número de matches: {matches}, IDs Totais: {len(ids)}, número de chaves fora chaves_out: {len(keys_out)}')
+print(f'Number of matches: {matches}, Total identifiers: {len(ids)}, Number of identifiers out: {len(keys_out)}')
 
 
