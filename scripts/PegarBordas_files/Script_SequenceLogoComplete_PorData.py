@@ -94,34 +94,48 @@ for file in bordasFiles:
                                     dataDict[data][line] = 1
                         else:
                             print('The sequence size is not as expected', file.name)
-print(f'Dicionário das datas das sequencias:\n{dataDict}\n')
+#print(f'Dicionário das datas das datas e das sequências:\n{dataDict}\n')
 
 datas.sort()
 print(f'\nDatas {datas} \n')
 
 # listaDados = ['2020-12-22', '1', '2', '3', '3', '4', '3', '2021-01-03']  # Lista das datas das sequências
-print(len(datas))
+# print(len(datas))
 allDays = pd.date_range(datas[0], datas[len(datas) - 1])
-print(f'Todas as datas {allDays}')  # Lista de todas as datas entre a data da sequencia mais antiga e da mais nova
+#print(f'Todas as datas {allDays}')  # Lista de todas as datas entre a data da sequencia mais antiga e da mais nova
 
-daysRange = 3 # pedir para o usuário !!!!!!!!!!!
+daysRange = args.Days
 initial = 0
 totalGraphs = ceil(len(allDays) / daysRange)
-# print(totalGraphs)
+#print(f'Total Graphs {totalGraphs}')
 
 for a in range(0, totalGraphs):
     final = initial + daysRange - 1
-    print(f'Initial = {initial}')
-    print(f'Final = {final}')
+    # print(f'Initial = {initial}')
+    # print(f'Final = {final}')
     # print(f'Len de allDays: {len(allDays)}')
     if final > (len(allDays) - 1):
-        print(f'------------------ FINAL -------------------')
         daterange = pd.date_range(allDays[initial], allDays[len(allDays) - 1])
     else:
         daterange = pd.date_range(allDays[initial], allDays[final])
-    print(daterange)
-    for data in daterange:
-        print(data.strftime("%Y-%m-%d"))
+    # print(f'Date range: {daterange}')
+    seqDict = {}
+    for fulldata in daterange:
+        data = fulldata.strftime("%Y-%m-%d")
+        # print(f'\nDATA: {data}\n')
+        print(f'Data: {data}')
+        if data in datas:
+            for seq, freq in dataDict[data].items():
+                print(f'Seq e freq: {seq} e {freq}')
+                if seq in seqDict.keys():
+                    seqDict[seq] = seqDict[seq] + freq
+                    print(f'SeqDict: {seqDict}')
+                else: # if seq not in seqDict.keys():
+                    seqDict[seq] = freq
+                    print(f'SeqDict: {seqDict}')
+        else:
+            print(f'Data sem registro de sequências: {data}')
+    print(f'\nSeqDict FINAL: {seqDict}\n\n')
     initial = final + 1
 
 
