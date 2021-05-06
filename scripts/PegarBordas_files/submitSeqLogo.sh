@@ -17,7 +17,7 @@ do
     do
         for border in {1..15}
         do
-            python3 Script_SequenceLogoCompleto_SemData.py ../../bordasFiles/${region}_Bordas/ Matrix_${DatasetType}_${region}_${type}_${border} Borders_${DatasetType}_${region}_${type}_${border} SequenceLogo_${DatasetType}_${region}_${type}_${border} ${DatasetType} ${type} $border
+            python3 Script_SequenceLogoCompleto_SemData.py ../../bordasFiles/${region}_Bordas/ Matrix_${DatasetType}_${region}_${type}_${border} Borders_${DatasetType}_${region}_${type}_${border} SequenceLogo_${DatasetType}_${region}_${type}_${border} ${DatasetType} ${type} ${border}
         done
     done
 done
