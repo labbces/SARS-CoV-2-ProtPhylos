@@ -7,7 +7,7 @@ import argparse
 # Using argparse to use script by terminal
 parser = argparse.ArgumentParser()
 parser.add_argument("IDsList", help="list of ids of cluster sequences obtained by CD-HIT(proteins)")
-parser.add_argument("MultiFaGenes")
+parser.add_argument("MultiFaGenes", help="multifasta file with genes sequences")
 args = parser.parse_args()
 
 try:
