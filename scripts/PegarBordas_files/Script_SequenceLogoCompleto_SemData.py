@@ -9,6 +9,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import logomaker
 from logomaker import Glyph
+from Bio import SeqIO
 
 # Using ArgParse to make easier use this script using command-line
 parser = argparse.ArgumentParser()
@@ -30,7 +31,7 @@ lentype = {'nt': 24,
            }
 seqDict = {}
 
-patternString = '.+\.bordas\.' + str(args.NumBorder) + '_\d+_\d+\.' + args.SeqType + '\.fa$'
+patternString = 'Bordas_.+_' + str(args.NumBorder) + '\.' + args.SeqType + '\.fasta$'
 pattern = re.compile(patternString)
 bordasFiles = os.scandir(args.BordasPath)
 
@@ -38,18 +39,14 @@ for file in bordasFiles:
     match = re.search(pattern, file.name)
     if match:
         filePath = args.BordasPath + '/' + file.name
-        with open(filePath, "r") as file_object:
-            for line in file_object:
-                line = line.strip().upper()
-                match2 = re.search(r'^>', line)
-                if not match2:
-                    if len(line) == lentype[args.SeqType]:
-                        if line in seqDict.keys():
-                            seqDict[line] = seqDict[line] + 1
-                        else:
-                            seqDict[line] = 1
-                    else:
-                        print('The sequence size is not as expected', file.name)
+        for record in SeqIO.parse(filePath, "fasta"):
+            if len(record.seq) == lentype[args.SeqType]:
+                if str(record.seq) in seqDict.keys():
+                    seqDict[str(record.seq)] = seqDict[str(record.seq)] + 1
+                else:
+                    seqDict[str(record.seq)] = 1
+            else:
+                print('The sequence size is not as expected', file.name, '\t', record.id)
 print(f'Dicionário das sequências:\n{seqDict}\n')
 
 seq2Delete = []
@@ -109,7 +106,7 @@ with open(args.SeqStorage, 'w') as SeqStorage:
                             posDict[e][seq[e]] = amount
                         else:
                             posDict[e][seq[e]] = posDict[e][seq[e]] + 1
-# print(f'Dicionário das Posições:\n{posDict}\n')
+print(f'Dicionário das Posições:\n{posDict}\n')
 
 
 # Build the matrixDict
@@ -145,7 +142,7 @@ Codon2Symbol = {'AAA': 'A', 'AAC': 'B', 'AAG': 'C', 'AAT': 'D', 'ACA': 'E', 'ACC
 
 for pos in posDict.keys():
     total = sum(posDict[pos].values())
-    print(f'Total: {total}')
+    # print(f'Total: {total}')
     for res in sorted(alphatype[args.SeqType]):
         if res in posDict[pos].keys():
             freq = posDict[pos][res] / total
@@ -153,32 +150,32 @@ for pos in posDict.keys():
             matrixDict[args.SeqType][res].append(freq)
         else:
             matrixDict[args.SeqType][res].append(0)
-# print(f'Dicionário que formará a Matrix: \n{matrixDict}\n')
+print(f'Dicionário que formará a Matrix: \n{matrixDict}\n')
 
 if args.SeqType.upper().strip() == 'NT':
     matrixSimb = {}
     for codon in matrixDict[args.SeqType].keys():
         matrixSimb[Codon2Symbol[codon]] = matrixDict[args.SeqType][codon]
-    # print(f'Dicionário que formará a Matrix com símbolos: \n{matrixSimb}\n')
+    print(f'Dicionário que formará a Matrix com símbolos: \n{matrixSimb}\n')
 
 # Build Matrix and save
 MatraixDF = pd.DataFrame(matrixDict[args.SeqType])
 MatraixProb_name = 'PROB_' + args.Matrix
 MatraixDF.to_csv(sep="\t", header=True, path_or_buf=MatraixProb_name, index=True)
-# print(f'Matrix: \n{MatraixDF}\n')
+print(f'Matrix: \n{MatraixDF}\n')
 
 if args.SeqType.upper().strip() == 'NT':
     matrixSymbol_name = 'PROB_' + args.Matrix + '_Symbol'
     MatraixDF = pd.DataFrame(matrixSimb)
     MatraixDF.to_csv(sep="\t", header=True, path_or_buf=matrixSymbol_name, index=True)
-    # print(f'Matrix de Símbolos: \n{MatraixDF}\n')
+    print(f'Matrix de Símbolos: \n{MatraixDF}\n')
 
 # Converting probability matrix to information (bits) matrix
 matrixValid = logomaker.validate_matrix(MatraixDF, matrix_type='probability', allow_nan=True)
 matrixBit = logomaker.transform_matrix(matrixValid, from_type='probability', to_type='information')
 matrixBit_name = "BIT_" + args.Matrix
 matrixBit.to_csv(sep="\t", header=True, path_or_buf=matrixBit_name, index=True)
-# print(f'Matrix de Bits:\n{matrixBit}\n')
+print(f'Matrix de Bits:\n{matrixBit}\n')
 
 # Building sequence logos
 if args.SeqType.upper().strip() == 'AA':
@@ -201,9 +198,9 @@ elif args.SeqType.upper().strip() == 'NT':
     for symbol in matrixBit.columns:
         Codon = list(Codon2Symbol.keys())[list(Codon2Symbol.values()).index(symbol)]
         Symbols2Codon[symbol] = Codon
-    # print(f'Symbols 2 codon: \n {Symbols2Codon}')
+    print(f'Symbols 2 codon: \n {Symbols2Codon}')
     bit_matrix_codon = matrixBit.rename(Symbols2Codon, axis='columns')
-    # print(f'Bit matrix codon: \n{bit_matrix_codon}\n')
+    print(f'Bit matrix codon: \n{bit_matrix_codon}\n')
     matrixCodonBit_name = "BIT_Codon_" + args.Matrix
     bit_matrix_codon.to_csv(sep="\t", header=True, path_or_buf=matrixCodonBit_name, index=True)
 
@@ -212,7 +209,7 @@ elif args.SeqType.upper().strip() == 'NT':
     for simb in dictBit.keys():
         for k, v in Codon2Symbol.items():
             dictBitCodon[k] = dictBit[v]
-    # print(f'Dict dos bits dos codons:\n{dictBitCodon}\n')
+    print(f'Dict dos bits dos codons:\n{dictBitCodon}\n')
 
     color_palett = {'GCT': 'black', 'GCC': 'black', 'GCA': 'black', 'GCG': 'black', 'TTT': 'black', 'TTC': 'black',
                     'ATT': 'black', 'ATC': 'black', 'ATA': 'black', 'TTA': 'black', 'TTG': 'black', 'CTT': 'black',
@@ -251,7 +248,7 @@ elif args.SeqType.upper().strip() == 'NT':
                 else:
                     info2Glyph[pos][trinca] = {'bit': bit, 'floor': floor, 'ceiling': ceiling, 'p': p, 'color': color_palett[trinca]}
         p += 3
-    # print(f'\ninfo2Glyph: \n{info2Glyph}\n')
+    print(f'\ninfo2Glyph: \n{info2Glyph}\n')
 
 
 
@@ -265,7 +262,7 @@ elif args.SeqType.upper().strip() == 'NT':
                 'codon': key,
                 'data': value,
             })
-    # print(f'Glyph final list: \n{ListInfo2Glyph}\n')
+    print(f'Glyph final list: \n{ListInfo2Glyph}\n')
 
     fig, ax = plt.subplots(figsize=[7, 4])
     # set bounding box
