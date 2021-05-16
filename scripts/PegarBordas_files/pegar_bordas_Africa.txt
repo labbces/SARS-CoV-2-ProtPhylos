@@ -4,31 +4,34 @@
 #$ -V
 #$ -cwd
 #$ -t 1-593
-<<<<<<< HEAD
-#$ -tc 48 
-=======
 #$ -tc 48
->>>>>>> 77b27a5ccc88fb5120d6a7650a98b6ed423e2a40
 
 module load EMBOSS/6.6.0
 
-EMB=`ls -1 /Storage/data1/bia.estevam/PegarBordas_files/RATT_files/Africa/*.embl | head -n $SGE_TASK_ID | tail -n 1`
+REGION=Africa
+EMB=`ls -1 /Storage/data1/bia.estevam/PegarBordas_files/sequencesFilesRATT/${REGION}/*.embl | head -n $SGE_TASK_ID | tail -n 1`
 EMBbase=`basename $EMB`
 echo $EMBbase
 
 COR_FINAL=`grep mat_peptide $EMB | grep -v join|sed 's/FT   mat_peptide     [0-9]*..//'|sort -n|tail -n 1`
 
 count=0
+
 for cor in $(grep mat_peptide $EMB | tr -d "join(" | tr -d ")"| sed 's/FT   mat_peptde     //'|sed 's/..[0-9]*,[0-9]*../../'|sed 's/[0-9]*\.\.//' | sort -n); 
  do
   count=$((count+1))
+  TOTALFILE_NT=Bordas_${REGION}_${count}.nt.fasta
+  TOTALFILE_AA=Bordas_${REGION}_${count}.aa.fasta
   if [ $cor -lt ${COR_FINAL} ] 
   then  
     start=$((cor-11))
     end=$((cor+1+11))
     output=${EMBbase}.bordas.${count}_${start}_${end}
     extractseq $EMB ${output}.nt.fa -regions "${start}-${end}"
+    sed "s/^>.*/>$output/" ${output}.nt.fa >> ${TOTALFILE_NT}
     transeq ${output}.nt.fa ${output}.aa.fa -frame=1
+    sed "s/^>.*/>$output/" ${output}.aa.fa >> ${TOTALFILE_AA}
+    rm ${output}.nt.fa ${output}.aa.fa
   fi
 done
 
