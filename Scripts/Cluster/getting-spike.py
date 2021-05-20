@@ -38,8 +38,8 @@ for file in embl_path:
         invalid_files.write(file)
 
 # Writing the multifasta files with the sequences
-SeqIO.write(GeneE_list, f'{region}_gene_e.fasta', "fasta")
-SeqIO.write(ProteinE_list, f'{region}_protein_e.fasta', "fasta")
+SeqIO.write(GeneE_list, f'{region}_gene_s.fasta', "fasta")
+SeqIO.write(ProteinE_list, f'{region}_protein_s.fasta', "fasta")
 
 
 
