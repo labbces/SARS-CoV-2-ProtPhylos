@@ -19,7 +19,7 @@ GeneE_list = []
 ProteinE_list = []
 
 # file to save invalid files
-invalid_files = open("invalid_files.txt", 'w')
+invalid_files = open(f'invalid_files_S_{region}.txt', 'w')
 
 # Making SeqRecords and storing in the lists
 for file in embl_path:
