@@ -73,9 +73,10 @@ alphatype = {'aa': ['A', 'R', 'N', 'D', 'C', 'Q', 'E', 'G', 'H', 'I', 'L', 'K', 
              }
 codons = []
 ntAmount = 3
-
+total = 0
 with open(args.SeqStorage, 'w') as SeqStorage:
     for seq, amount in seqDict.items():
+        total += amount
         if args.DataSetType.upper().strip() == 'REDUNDANT':
             SeqStorage.write(f'{amount}x {seq}\n')
         elif args.DataSetType.upper().strip() == 'NONREDUNDANT':
@@ -143,12 +144,13 @@ Codon2Symbol = {'AAA': 'A', 'AAC': 'B', 'AAG': 'C', 'AAT': 'D', 'ACA': 'E', 'ACC
                 }
 
 for pos in posDict.keys():
-    total = sum(posDict[pos].values())
+    # total = sum(posDict[pos].values())
     # print(f'Total: {total}')
+
     for res in sorted(alphatype[args.SeqType]):
         if res in posDict[pos].keys():
             freq = posDict[pos][res] / total
-            #print(freq)
+            print(f'{pos} {res} {freq} {total} {posDict[pos][res]}')
             matrixDict[args.SeqType][res].append(freq)
         else:
             matrixDict[args.SeqType][res].append(0)
