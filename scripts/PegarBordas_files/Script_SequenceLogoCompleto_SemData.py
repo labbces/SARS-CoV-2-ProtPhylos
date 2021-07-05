@@ -52,11 +52,15 @@ print(f'Dicionário das sequências:\n{seqDict}\n')
 
 seq2Delete = []
 for seq in seqDict.keys():
+    print(f'{seq} {seqDict[seq]}')
     if seqDict[seq] == 1:
         seq2Delete.append(seq)
     else:
         if args.DataSetType.upper() == 'NONREDUNDANT':
             seqDict[seq] = 1
+    if "XXXXXXXX" in seq:
+        seq2Delete.append(seq)
+print(f"Trash: {seq2Delete}")
 for seq in seq2Delete:
     del seqDict[seq]
 print(f'Dicionário das sequências:\n{seqDict}\n')
@@ -73,10 +77,10 @@ alphatype = {'aa': ['A', 'R', 'N', 'D', 'C', 'Q', 'E', 'G', 'H', 'I', 'L', 'K', 
              }
 codons = []
 ntAmount = 3
-total = 0
+#total = 0
 with open(args.SeqStorage, 'w') as SeqStorage:
     for seq, amount in seqDict.items():
-        total += amount
+        #total += amount
         if args.DataSetType.upper().strip() == 'REDUNDANT':
             SeqStorage.write(f'{amount}x {seq}\n')
         elif args.DataSetType.upper().strip() == 'NONREDUNDANT':
@@ -99,6 +103,7 @@ with open(args.SeqStorage, 'w') as SeqStorage:
 
         elif args.SeqType.upper() == 'AA':
             for e in range(len(seq)):
+                print(f'Dicionário das Posições:\n{posDict}\n')
                 if seq[e].upper() in alphatype[args.SeqType]:
                     if e not in posDict.keys():
                         posDict[e] = {}
@@ -108,8 +113,8 @@ with open(args.SeqStorage, 'w') as SeqStorage:
                         if seq[e] not in posDict[e]:
                             posDict[e][seq[e]] = amount
                         else:
-                            posDict[e][seq[e]] = posDict[e][seq[e]] + 1
-#print(f'Dicionário das Posições:\n{posDict}\n')
+                            posDict[e][seq[e]] = posDict[e][seq[e]] + amount
+print(f'Dicionário das Posições:\n{posDict}\n')
 
 
 # Build the matrixDict
@@ -144,8 +149,8 @@ Codon2Symbol = {'AAA': 'A', 'AAC': 'B', 'AAG': 'C', 'AAT': 'D', 'ACA': 'E', 'ACC
                 }
 
 for pos in posDict.keys():
-    # total = sum(posDict[pos].values())
-    # print(f'Total: {total}')
+    total = sum(posDict[pos].values())
+    print(f'Total: {total}')
 
     for res in sorted(alphatype[args.SeqType]):
         if res in posDict[pos].keys():
@@ -154,7 +159,7 @@ for pos in posDict.keys():
             matrixDict[args.SeqType][res].append(freq)
         else:
             matrixDict[args.SeqType][res].append(0)
-#print(f'Dicionário que formará a Matrix: \n{matrixDict}\n')
+print(f'Dicionário que formará a Matrix: \n{matrixDict}\n')
 
 if args.SeqType.upper().strip() == 'NT':
     matrixSimb = {}
@@ -166,7 +171,7 @@ if args.SeqType.upper().strip() == 'NT':
 MatraixDF = pd.DataFrame(matrixDict[args.SeqType])
 MatraixProb_name = 'PROB_' + args.Matrix
 MatraixDF.to_csv(sep="\t", header=True, path_or_buf=MatraixProb_name, index=True)
-#print(f'Matrix: \n{MatraixDF}\n')
+print(f'Matrix: \n{MatraixDF}\n')
 
 if args.SeqType.upper().strip() == 'NT':
     matrixSymbol_name = 'PROB_' + args.Matrix + '_Symbol'
@@ -179,7 +184,7 @@ matrixValid = logomaker.validate_matrix(MatraixDF, matrix_type='probability', al
 matrixBit = logomaker.transform_matrix(matrixValid, from_type='probability', to_type='information')
 matrixBit_name = "BIT_" + args.Matrix
 matrixBit.to_csv(sep="\t", header=True, path_or_buf=matrixBit_name, index=True)
-#print(f'Matrix de Bits:\n{matrixBit}\n')
+print(f'Matrix de Bits:\n{matrixBit}\n')
 
 # Building sequence logos
 if args.SeqType.upper().strip() == 'AA':
