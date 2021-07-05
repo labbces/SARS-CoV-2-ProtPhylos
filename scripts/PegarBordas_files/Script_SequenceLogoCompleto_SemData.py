@@ -58,8 +58,9 @@ for seq in seqDict.keys():
     else:
         if args.DataSetType.upper() == 'NONREDUNDANT':
             seqDict[seq] = 1
-    if "XXXXXXXX" in seq:
-        seq2Delete.append(seq)
+    if "XXXXXXXX" not in seq2Delete:
+        if "XXXXXXXX" in seq:
+            seq2Delete.append(seq)
 print(f"Trash: {seq2Delete}")
 for seq in seq2Delete:
     del seqDict[seq]
