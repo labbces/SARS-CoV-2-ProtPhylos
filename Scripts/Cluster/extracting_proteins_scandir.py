@@ -41,7 +41,7 @@ for file in embl_path:
                         name = record.id.split(".")[1]
                         cds_gene = position.extract(record.seq)
                         if len(cds_gene) % 3 != 0:
-                            invalid_files.write(record.id + "\t" + "trimmed sequence")
+                            invalid_files.write(record.id + "\t" + "trimmed sequence" + "\n")
                             continue
                         cds_protein = position.extract(record.seq).translate()
                         gene = SeqRecord(seq=cds_gene, id=f'gene_{protein_name}_' + name)
