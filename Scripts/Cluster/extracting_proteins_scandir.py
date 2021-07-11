@@ -57,7 +57,7 @@ for file in embl_path:
 
         except:
             if file.is_file():
-                invalid_files.write(file.path)
+                invalid_files.write(file.path + "\n")
 
 # Printing information about how many sequences actually work
 print(count1, count2)

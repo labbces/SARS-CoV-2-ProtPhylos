@@ -55,7 +55,7 @@ for path in paths:
 
         except:
             if path.is_file():
-                invalid_files.write(str(path))
+                invalid_files.write(str(path.name) + "\n")
 
 # Printing information about how many sequences actually work
 print(count1, count2)
