@@ -31,7 +31,7 @@ count2 = 0
 
 # Making SeqRecords and storing in the lists
 for file in embl_path:
-    if file.path.endswith(".embl") and file.is_file():
+    if file.path.endswith(".final.embl") and file.is_file():
         try:
             count2 += 1
             for record in SeqIO.parse(file, "embl"):

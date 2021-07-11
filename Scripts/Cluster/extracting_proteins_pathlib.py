@@ -15,7 +15,7 @@ args = parser.parse_args()
 input_path = args.input_Path
 output_path = args.output_Path
 protein_name = args.protein
-paths = Path(input_path).glob('**/*.embl')
+paths = Path(input_path).glob('**/*.final.embl')
 
 # List to store record from the sequences
 Gene_list = []
@@ -39,7 +39,7 @@ for path in paths:
                         name = record.id.split(".")[1]
                         cds_gene = position.extract(record.seq)
                         if len(cds_gene) % 3 != 0:
-                            invalid_files.write(record.id + "\t" + "trimmed sequence")
+                            invalid_files.write(record.id + "\t" + "trimmed sequence" + "\n")
                             continue
                         cds_protein = position.extract(record.seq).translate()
                         gene = SeqRecord(seq=cds_gene, id=f'gene_{protein_name}_' + name)
@@ -55,7 +55,7 @@ for path in paths:
 
         except:
             if path.is_file():
-                invalid_files.write(path)
+                invalid_files.write(str(path))
 
 # Printing information about how many sequences actually work
 print(count1, count2)
