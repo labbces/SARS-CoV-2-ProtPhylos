@@ -18,7 +18,7 @@ args = parser.parse_args()
 
 # Opening files safely
 try:
-    seq_handler = open(args.sequencesFile, 'r')
+    seq_handler = open(args.sequencesFile, 'r+')
 except:
     print('File', args.sequencesFile,  'cannot be open')
     exit()
@@ -29,22 +29,33 @@ except:
     print('File', args.FineMetadataFile, 'cannot be open')
     exit()
 
-
 # Creating a Hash to store identifiers
 next_table = {}
+
+
 for line in metadata_handler:
-    line = line.split("\t")
-    region = line[5]
-    identifier = line[0]
-    next_table[identifier] = region
+    try:
+        line = line.split("\t")
+        region = line[4].split('/')[0].rstrip(" ")
+        identifier = line[0].split('/')[2]
+        identifier = identifier.rstrip(" ")
+        identifier = identifier.replace(" ", "_")
+        next_table[identifier] = region
+    except:
+        print("oK")
+
 
 # Avoiding redundancy
 files_written = dict()
 
 for root, dirs, files in os.walk("."):
     for filename in files:
-        seq_names = filename.replace("____", "/").split(".")[0]
-        files_written[seq_names] = 0
+        try:
+            if filename.endswith(".fasta"):
+                seq_names = filename.replace("____", "/").split("/")[2]
+                files_written[seq_names] = 0
+        except:
+            print("ERROR in avoiding redundancy", filename)
 
 # Storing broken sequences from Gisaid
 broken = list()
@@ -53,26 +64,33 @@ broken_sequences = open("broken-sequences.txt", 'w')
 # Counting amount of sequences that were actually written in the run
 written_sequences = 0
 
+
 # Using Biopython to write the sequences in their respective directory
 for seq_record in SeqIO.parse(seq_handler, "fasta"):
     try:
-        if seq_record.id in files_written.keys():
+        label = seq_record.id.split('/')[2]
+        if label in files_written.keys():
             continue
-        region = next_table[seq_record.id]
-        region = region.replace(' ', '_')
-        if seq_record.id in next_table:
-            if not os.path.isdir(region):
-                os.mkdir(region)
-            filename = seq_record.id  # configuring the path
-            filename = filename.replace("/", "____")
-            pathname = f'{region}/{filename}.fasta'
-            SeqIO.write(seq_record, pathname, 'fasta')
-            written_sequences += 1
+        try:
+            region = next_table[label]
+            region = region.replace(' ', '_')
+            if label in next_table:
+                if not os.path.isdir(region):
+                    os.mkdir(region)
+                filename = seq_record.id  # configuring the path
+                filename = filename.replace("/", "____")
+                pathname = f'{region}/{filename}.fasta'
+                print(seq_record.id)
+                SeqIO.write(seq_record, pathname, 'fasta')
+                written_sequences += 1
+        except:
+            #print("broken identifier", seq_record.id)
+            broken_sequences.write(f'broken identifier -- {seq_record.id} \n')
     except:
         # counting missing sequences and storing their respective IDs
-        print(seq_record.id)
+        #print("broken seq.record", seq_record.id)
         broken.append(seq_record.id)
-        broken_sequences.write(seq_record.id + "\n")
+        broken_sequences.write(f'broken seq.record -- {seq_record.id}  \n')
 
 # Process's Metrics
 print(f'Total of broken identifies: {len(broken)}')
