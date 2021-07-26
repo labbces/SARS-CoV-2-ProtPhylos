@@ -80,7 +80,6 @@ for seq_record in SeqIO.parse(seq_handler, "fasta"):
                 filename = seq_record.id  # configuring the path
                 filename = filename.replace("/", "____")
                 pathname = f'{region}/{filename}.fasta'
-                print(seq_record.id)
                 SeqIO.write(seq_record, pathname, 'fasta')
                 written_sequences += 1
         except:
@@ -88,7 +87,6 @@ for seq_record in SeqIO.parse(seq_handler, "fasta"):
             broken_sequences.write(f'broken identifier -- {seq_record.id} \n')
     except:
         # counting missing sequences and storing their respective IDs
-        #print("broken seq.record", seq_record.id)
         broken.append(seq_record.id)
         broken_sequences.write(f'broken seq.record -- {seq_record.id}  \n')
 
