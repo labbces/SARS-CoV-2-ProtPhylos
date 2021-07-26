@@ -79,6 +79,7 @@ for seq_record in SeqIO.parse(seq_handler, "fasta"):
                     os.mkdir(region)
                 filename = seq_record.id  # configuring the path
                 filename = filename.replace("/", "____")
+                filename = filename.replace("|", "__")
                 pathname = f'{region}/{filename}.fasta'
                 SeqIO.write(seq_record, pathname, 'fasta')
                 written_sequences += 1
