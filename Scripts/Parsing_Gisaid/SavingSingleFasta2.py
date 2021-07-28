@@ -51,7 +51,7 @@ files_written = dict()
 for root, dirs, files in os.walk("."):
     for filename in files:
         try:
-            if filename.endswith(".fasta"):
+            if filename.endswith(".fasta") and "hCoV-19" in filename:
                 seq_names = filename.replace("____", "/").split("/")[2]
                 files_written[seq_names] = 0
         except:
