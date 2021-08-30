@@ -1,0 +1,16 @@
+#!/bin/bash
+
+#$ -q all.q
+#$ -V
+#$ -cwd
+#$ -pe smp 14
+
+module load mafft/7.487
+module load IQ-TREE/1.7-beta18
+module load RevTrans/1.4
+
+mafft --maxiterate 1000 --thread $NSLOTS --auto nsp3.aa.nr100.fasta > nsp3.aa.nr100.aln
+
+revtrans.py nsp3.nt.nr100.fasta nsp3.aa.nr100.aln -match name nsp3.nt.nr100.aln
+
+iqtree -s nsp3.nt.nr100.aln -st CODON1 -B 1000 -T $NSLOTS -m GY+F

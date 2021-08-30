@@ -1,0 +1,19 @@
+#!/bin/bash
+
+#$ -q all.q
+#$ -V
+#$ -cwd
+#$ -pe smp 10
+
+module load CD-HIT/4.8.1
+
+#cat */global_gene_3C-like_proteinase.fasta > 3C-like_proteinase.nt.fasta
+#cat */global_protein_3C-like_proteinase.fasta > 3C-like_proteinase.aa.fasta
+#sed -i 's/>gene_/>/' 3C-like_proteinase.nt.fasta
+#sed -i 's/>protein_/>/' 3C-like_proteinase.aa.fasta
+#cd-hit-est -i 3C-like_proteinase.nt.fasta -o 3C-like_proteinase.nt.nr100.fasta -c 1 -G 1 -M 0 -T $NSLOTS -d 0 
+grep ">" 3C-like_proteinase.nt.nr100.fasta | cut -f1 -d ' '| sed 's/>//' > 3C-like_proteinase.ids
+
+/Storage/progs/bces_scripts/extractSequencesFromList.pl -f 3C-like_proteinase.aa.fasta -i 3C-like_proteinase.ids
+
+mv 3C-like_proteinase.ids.fasta 3C-like_proteinase.aa.nr100.fasta

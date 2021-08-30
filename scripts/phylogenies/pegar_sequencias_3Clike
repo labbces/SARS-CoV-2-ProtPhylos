@@ -1,0 +1,18 @@
+#!/bin/bash
+
+#$ -q all.q
+#$ -V
+#$ -cwd
+#$ -tc 48
+#$ -t 1-6
+#$ -hold_jid 21370
+
+module load Python/3.7.2
+input_path=`ls -1d /Storage/data1/bia.estevam/PegarBordas_files/sequencesFilesRATT/*|head -n $SGE_TASK_ID|tail -n1`
+region=`basename $input_path`
+mkdir $region
+
+#cp /Storage/data1/bia.estevam/PegarBordas_files/sequencesFilesRATT/${region}/*.embl ${region}
+cd $region
+#sed -i 's/.final ; ; ; ; ;/.final ; ; ;/' *.embl
+python3 ../extracting_proteins_pathlib_3Clike.py . . 3C-like_proteinase

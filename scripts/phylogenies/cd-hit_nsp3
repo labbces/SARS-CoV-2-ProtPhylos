@@ -1,0 +1,20 @@
+#!/bin/bash
+
+#$ -q all.q
+#$ -V
+#$ -cwd
+#$ -pe smp 10
+
+module load CD-HIT/4.8.1
+
+#cat */global_gene_nsp3.fasta > nsp3.nt.fasta
+#cat */global_protein_nsp3.fasta > nsp3.aa.fasta
+#sed -i 's/>gene_/>/' nsp3.nt.fasta
+#sed -i 's/>protein_/>/' nsp3.aa.fasta
+#cd-hit-est -i nsp3.nt.fasta -o nsp3.nt.nr100.fasta -c 1 -G 1 -M 0 -T $NSLOTS -d 0 
+grep ">" nsp3.nt.nr100.fasta | cut -f1 -d ' ' | sed 's/>//' > nsp3.ids
+
+/Storage/progs/bces_scripts/extractSequencesFromList.pl -f nsp3.aa.fasta -i nsp3.ids
+
+mv nsp3.ids.fasta nsp3.aa.nr100.fasta
+sed -i 's/*/X/g' nsp3.aa.nr100.fasta
