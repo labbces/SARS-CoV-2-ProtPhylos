@@ -1,8 +1,7 @@
-#!/usr/bin/env python3
 import argparse
 
 '''                                 Description
-        Script to replace space to underline to solve problem with biopython.
+        Copy and Replace multifasta file from Gisaid. Fixing the problem to save in reason of "/" and "Pipe".
         Reading line by line and writing the changes.
 
 '''
@@ -27,7 +26,8 @@ except:
 # Writing new file with the changes
 for line in original_seq_handler:
     if line.startswith('>'):
-        line = line.replace(' ', '_')  # Replacing " " to "_" to avoid problems with Biopython processing
+        line = line.replace(' ', '_')  # Replacing " " for "_"
+        transformed_sequence.write(line)
     else:
         transformed_sequence.write(line)
 transformed_sequence.close()
